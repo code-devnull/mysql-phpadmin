@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    container_name: local-mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - '33061:3306'
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
+      - ./docker/sql_files:/_tmp
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: local-pma
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 10000M
+    restart: unless-stopped
+    ports:
+      - 8090:80
